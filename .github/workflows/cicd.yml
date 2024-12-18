@@ -1,0 +1,63 @@
+name: Deploy DevLab Application
+
+on:
+  push:
+    branches:
+      - trying-with-aws
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Login to docker hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      # Build frontend (app)
+      - name: Build Docker Image for Frontend
+        run: |
+          cd app
+          docker build -t ngcuyen/codehub_baseproject:frontend .
+
+      # Build backend (server)
+      - name: Build Docker Image for Backend
+        run: |
+          cd server
+          docker build -t ngcuyen/codehub_baseproject:backend .
+
+      # Publish frontend image to Docker Hub
+      - name: Publish Frontend Image to Docker Hub
+        run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+          docker push ngcuyen/codehub_baseproject:frontend
+
+      # Publish backend image to Docker Hub
+      - name: Publish Backend Image to Docker Hub
+        run: |
+          docker push ngcuyen/codehub_baseproject:backend
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      # Deploy frontend (app)
+      - name: Pull Frontend Image from Docker Hub
+        run: docker pull ngcuyen/codehub_baseproject:frontend
+
+      - name: Run Frontend Container
+        run: |
+          docker stop frontend || true
+          docker rm frontend || true
+          docker run -d -p 5173:5173 --name frontend ngcuyen/codehub_baseproject:frontend
+
+      # Deploy backend (server)
+      - name: Pull Backend Image from Docker Hub
+        run: docker pull ngcuyen/codehub_baseproject:backend
+
+      - name: Run Backend Container
+        run: |
+          docker stop backend || true
+          docker rm backend || true
+          docker run -d -p 5050:5050 --name backend ngcuyen/codehub_baseproject:backend -e MONGO_PASSWORD='${{ secrets.MONGO_PASSWORD }}'

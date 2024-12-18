@@ -1,4 +1,4 @@
-FROM node:alpine3.18
+FROM node:18-alpine
 WORKDIR /app
 # Copy package.json và package-lock.json vào container
 COPY package.json ./

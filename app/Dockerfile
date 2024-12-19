@@ -19,4 +19,4 @@ COPY . .
 EXPOSE 5173
 
 # Chạy ứng dụng
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "dev"]

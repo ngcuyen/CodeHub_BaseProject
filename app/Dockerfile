@@ -1,4 +1,5 @@
-FROM node:alpine3.18
+FROM node:16-alpine
+
 WORKDIR /app
 # Update Alpine packages and install necessary dependencies
 RUN apk add --no-cache python3 make g++

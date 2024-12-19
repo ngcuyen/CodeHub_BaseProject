@@ -35,7 +35,7 @@
 		"@studio-freight/react-lenis": "^0.0.47",
 		"ace-builds": "^1.33.0",
 		"antd": "^5.16.5",
-		"apexcharts": "^3.49.0",
+		"apexcharts": "^4.2.0",
 		"axios": "^1.7.2",
 		"bcryptjs": "^2.4.3",
 		"chart.js": "^4.4.2",

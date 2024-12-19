@@ -1,15 +1,22 @@
-FROM node:16-alpine
+FROM node:18-alpine
 
 WORKDIR /app
-# Update Alpine packages and install necessary dependencies
+
+# Cài đặt các công cụ cần thiết
 RUN apk add --no-cache python3 make g++
 
-# Copy package.json and package-lock.json into the container
+# Cấu hình registry npm và copy package.json
+RUN npm config set registry https://registry.npmjs.org/
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm install --unsafe-perm
+# Xóa cache npm và cài đặt các dependency
+RUN npm cache clean --force && npm install --no-optional --unsafe-perm
 
+# Copy toàn bộ mã nguồn
 COPY . .
+
+# Mở cổng
 EXPOSE 5173
-CMD [ "npm", "run", "start" ]
+
+# Chạy ứng dụng
+CMD ["npm", "run", "start"]
